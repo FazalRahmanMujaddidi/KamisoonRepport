@@ -51,7 +51,9 @@
 }
 
 body {
-  margin: 0;
+
+    font-family: Tahoma, Arial, sans-serif;
+    margin :0;
 }
 
 #root {

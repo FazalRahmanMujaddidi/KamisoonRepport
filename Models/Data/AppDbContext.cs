@@ -12,5 +12,6 @@ public class AppDbContext : DbContext
     public DbSet<Company> Companies { get; set; }
     public DbSet<Province> Provinces { get; set; }
     public DbSet<Items> Items { get; set; }
+    public DbSet<Report> Reports { get; set; }
     public DbSet<TruckType> TruckTypes { get; set; }
 }

@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using KamisoonRepport.Data;
 using KamisoonRepport.Models;
 
 namespace KamisoonRepport.Controllers;
@@ -7,52 +9,72 @@ namespace KamisoonRepport.Controllers;
 [Route("api/[controller]")]
 public class ProvinceController : ControllerBase
 {
-    private static List<Province> provinces = new List<Province>();
+    private readonly AppDbContext _context;
+
+    public ProvinceController(AppDbContext context)
+    {
+        _context = context;
+    }
 
     // GET ALL
     [HttpGet]
-    public IActionResult GetAll()
+    public async Task<IActionResult> GetAll()
     {
-        return Ok(provinces);
+        return Ok(await _context.Provinces.ToListAsync());
     }
 
     // GET BY ID
     [HttpGet("{id}")]
-    public IActionResult Get(int id)
+    public async Task<IActionResult> Get(int id)
     {
-        var province = provinces.FirstOrDefault(x => x.Id == id);
-        if (province == null) return NotFound();
+        var province = await _context.Provinces.FindAsync(id);
+
+        if (province == null)
+            return NotFound();
+
         return Ok(province);
     }
 
     // CREATE
     [HttpPost]
-    public IActionResult Create(Province province)
+    public async Task<IActionResult> Create(Province province)
     {
-        province.Id = provinces.Count + 1;
-        provinces.Add(province);
+        _context.Provinces.Add(province);
+
+        await _context.SaveChangesAsync();
+
         return Ok(province);
     }
 
     // UPDATE
     [HttpPut("{id}")]
-    public IActionResult Update(int id, Province updated)
+    public async Task<IActionResult> Update(int id, Province updated)
     {
-        var province = provinces.FirstOrDefault(x => x.Id == id);
-        if (province == null) return NotFound();
+        var province = await _context.Provinces.FindAsync(id);
+
+        if (province == null)
+            return NotFound();
 
         province.Name = updated.Name;
+
+        await _context.SaveChangesAsync();
+
         return Ok(province);
     }
 
     // DELETE
     [HttpDelete("{id}")]
-    public IActionResult Delete(int id)
+    public async Task<IActionResult> Delete(int id)
     {
-        var province = provinces.FirstOrDefault(x => x.Id == id);
-        if (province == null) return NotFound();
+        var province = await _context.Provinces.FindAsync(id);
 
-        provinces.Remove(province);
+        if (province == null)
+            return NotFound();
+
+        _context.Provinces.Remove(province);
+
+        await _context.SaveChangesAsync();
+
         return Ok();
     }
 }

@@ -1,0 +1,48 @@
+body {
+    direction: rtl;
+    text-align: right;
+    font-family: Arial;
+  height: 100%;
+  margin: 0;
+}
+
+
+.app-layout {
+  min-height: 100vh;
+}
+
+/* IMPORTANT: prevents sticky breaking */
+.page-content {
+  min-height: 100vh;
+}
+
+.table th,
+.table td {
+    text-align: right;
+}
+
+.form-control,
+.form-select {
+    text-align: right;
+}
+
+.navbar-nav {
+    margin-right: auto !important;
+    margin-left: 0 !important;
+}
+.navbar {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 9999;
+}
+
+.card {
+    text-align: right;
+}
+.sticky-form {
+  position: sticky;
+  top: 70px; /* adjust based on navbar height */
+  z-index: 1000;
+  background: white;
+}

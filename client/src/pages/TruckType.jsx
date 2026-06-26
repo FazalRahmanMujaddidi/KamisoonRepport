@@ -4,7 +4,7 @@ function TruckType() {
   const [truckTypes, setTruckTypes] = useState([]);
   const [name, setName] = useState("");
 
-  const API = "https://localhost:5047/api/trucktype"; // change port if needed
+  const API = "http://localhost:5047/api/trucktype";
 
   const loadData = () => {
     fetch(API)
@@ -17,6 +17,8 @@ function TruckType() {
   }, []);
 
   const addTruckType = () => {
+    if (!name.trim()) return;
+
     fetch(API, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -34,51 +36,105 @@ function TruckType() {
   };
 
   return (
-    <div className="container mt-4">
+    <div className="container py-4">
 
-      <h3>Truck Type Management</h3>
-
-      {/* FORM */}
-      <div className="card p-3 mb-3">
-        <input
-          className="form-control mb-2"
-          placeholder="Truck Type Name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-        />
-
-        <button className="btn btn-primary" onClick={addTruckType}>
-          Add Truck Type
-        </button>
+      {/* ================= HEADER ================= */}
+      <div className="text-center mb-4 mt-5">
+        <h3 className="fw-bold">🚛 د موټر ډول مدیریت</h3>
+        <p className="text-muted">د ترانسپورتی موټر ډولونه په اسانۍ سره مدیریت کړئ</p>
       </div>
 
-      {/* TABLE */}
-      <table className="table table-bordered table-hover">
-        <thead className="table-dark">
-          <tr>
-            <th>ID</th>
-            <th>Name</th>
-            <th>Action</th>
-          </tr>
-        </thead>
+      {/* ================= FORM ================= */}
+      <div className="card shadow-sm p-3 mb-4">
 
-        <tbody>
-          {truckTypes.map((t) => (
-            <tr key={t.id}>
-              <td>{t.id}</td>
-              <td>{t.name}</td>
-              <td>
-                <button
-                  className="btn btn-danger btn-sm"
-                  onClick={() => deleteTruckType(t.id)}
-                >
-                  Delete
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+        <div className="row g-2 align-items-center">
+
+          <div className="col-12 col-md-9">
+            <input
+              className="form-control"
+              placeholder="د موټر ډول"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
+          </div>
+
+          <div className="col-12 col-md-3 d-grid">
+            <button
+              className="btn btn-primary"
+              onClick={addTruckType}
+            >
+              ➕ ذخیره
+            </button>
+          </div>
+
+        </div>
+
+      </div>
+
+      {/* ================= TABLE ================= */}
+      <div className="card shadow-sm">
+
+        <div className="card-header bg-dark text-white">
+          د موټر ډولونو لیست
+        </div>
+
+        <div className="table-responsive">
+          <table className="table table-hover align-middle mb-0">
+
+            <thead className="table-light">
+              <tr>
+                <th style={{ width: "80px" }}>شمېره</th>
+                <th>د موټر ډول</th>
+                <th style={{ width: "120px" }}>عمل</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {truckTypes.length === 0 ? (
+                <tr>
+                  <td colSpan="3" className="text-center text-muted py-4">
+                    هېڅ د موټر ډول ونه موندل شو
+                  </td>
+                </tr>
+              ) : (
+                truckTypes.map((t) => (
+                  <tr key={t.id}>
+                    <td>{t.id}</td>
+                    <td className="fw-semibold">{t.name}</td>
+                    <td>
+                      <button
+                        className="btn btn-danger btn-sm w-100"
+                        onClick={() => deleteTruckType(t.id)}
+                      >
+                        🗑 حذف
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+
+          </table>
+        </div>
+
+      </div>
+
+      {/* ================= MOBILE STYLE ================= */}
+      <style>{`
+        @media (max-width: 576px) {
+          h3 {
+            font-size: 18px;
+          }
+
+          .btn {
+            font-size: 14px;
+          }
+
+          table {
+            font-size: 14px;
+          }
+        }
+      `}</style>
 
     </div>
   );

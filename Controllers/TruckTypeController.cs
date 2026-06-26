@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using KamisoonRepport.Data;
 using KamisoonRepport.Models;
 
 namespace KamisoonRepport.Controllers;
@@ -7,53 +9,67 @@ namespace KamisoonRepport.Controllers;
 [Route("api/[controller]")]
 public class TruckTypeController : ControllerBase
 {
-    private static List<TruckType> truckTypes = new List<TruckType>();
+    private readonly AppDbContext _context;
 
-    // GET ALL
+    public TruckTypeController(AppDbContext context)
+    {
+        _context = context;
+    }
+
     [HttpGet]
-    public IActionResult GetAll()
+    public async Task<IActionResult> GetAll()
     {
-        return Ok(truckTypes);
+        return Ok(await _context.TruckTypes.ToListAsync());
     }
 
-    // GET BY ID
     [HttpGet("{id}")]
-    public IActionResult Get(int id)
+    public async Task<IActionResult> Get(int id)
     {
-        var item = truckTypes.FirstOrDefault(x => x.Id == id);
-        if (item == null) return NotFound();
-        return Ok(item);
-    }
+        var truckType = await _context.TruckTypes.FindAsync(id);
 
-    // CREATE
-    [HttpPost]
-    public IActionResult Create(TruckType truckType)
-    {
-        truckType.Id = truckTypes.Count + 1;
-        truckTypes.Add(truckType);
+        if (truckType == null)
+            return NotFound();
+
         return Ok(truckType);
     }
 
-    // UPDATE
-    [HttpPut("{id}")]
-    public IActionResult Update(int id, TruckType updated)
+    [HttpPost]
+    public async Task<IActionResult> Create(TruckType truckType)
     {
-        var item = truckTypes.FirstOrDefault(x => x.Id == id);
-        if (item == null) return NotFound();
+        _context.TruckTypes.Add(truckType);
 
-        item.Name = updated.Name;
+        await _context.SaveChangesAsync();
 
-        return Ok(item);
+        return Ok(truckType);
     }
 
-    // DELETE
-    [HttpDelete("{id}")]
-    public IActionResult Delete(int id)
+    [HttpPut("{id}")]
+    public async Task<IActionResult> Update(int id, TruckType updated)
     {
-        var item = truckTypes.FirstOrDefault(x => x.Id == id);
-        if (item == null) return NotFound();
+        var truckType = await _context.TruckTypes.FindAsync(id);
 
-        truckTypes.Remove(item);
+        if (truckType == null)
+            return NotFound();
+
+        truckType.Name = updated.Name;
+
+        await _context.SaveChangesAsync();
+
+        return Ok(truckType);
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Delete(int id)
+    {
+        var truckType = await _context.TruckTypes.FindAsync(id);
+
+        if (truckType == null)
+            return NotFound();
+
+        _context.TruckTypes.Remove(truckType);
+
+        await _context.SaveChangesAsync();
+
         return Ok();
     }
 }

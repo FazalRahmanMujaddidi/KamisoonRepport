@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using KamisoonRepport.Data;
 using KamisoonRepport.Models;
 
 namespace KamisoonRepport.Controllers;
@@ -7,53 +9,72 @@ namespace KamisoonRepport.Controllers;
 [Route("api/[controller]")]
 public class ItemsController : ControllerBase
 {
-    private static List<Items> items = new List<Items>();
+    private readonly AppDbContext _context;
+
+    public ItemsController(AppDbContext context)
+    {
+        _context = context;
+    }
 
     // GET ALL
     [HttpGet]
-    public IActionResult GetAll()
+    public async Task<ActionResult<IEnumerable<Items>>> GetAll()
     {
-        return Ok(items);
+        return await _context.Items
+            .OrderBy(x => x.Id)
+            .ToListAsync();
     }
 
     // GET BY ID
     [HttpGet("{id}")]
-    public IActionResult Get(int id)
+    public async Task<ActionResult<Items>> Get(int id)
     {
-        var item = items.FirstOrDefault(x => x.Id == id);
-        if (item == null) return NotFound();
-        return Ok(item);
+        var item = await _context.Items.FindAsync(id);
+
+        if (item == null)
+            return NotFound();
+
+        return item;
     }
 
     // CREATE
     [HttpPost]
-    public IActionResult Create(Items item)
+    public async Task<ActionResult<Items>> Create(Items item)
     {
-        item.Id = items.Count + 1;
-        items.Add(item);
+        _context.Items.Add(item);
+        await _context.SaveChangesAsync();
+
         return Ok(item);
     }
 
     // UPDATE
     [HttpPut("{id}")]
-    public IActionResult Update(int id, Items updated)
+    public async Task<IActionResult> Update(int id, Items updated)
     {
-        var item = items.FirstOrDefault(x => x.Id == id);
-        if (item == null) return NotFound();
+        var item = await _context.Items.FindAsync(id);
+
+        if (item == null)
+            return NotFound();
 
         item.Name = updated.Name;
+
+        await _context.SaveChangesAsync();
 
         return Ok(item);
     }
 
     // DELETE
     [HttpDelete("{id}")]
-    public IActionResult Delete(int id)
+    public async Task<IActionResult> Delete(int id)
     {
-        var item = items.FirstOrDefault(x => x.Id == id);
-        if (item == null) return NotFound();
+        var item = await _context.Items.FindAsync(id);
 
-        items.Remove(item);
+        if (item == null)
+            return NotFound();
+
+        _context.Items.Remove(item);
+        await _context.SaveChangesAsync();
+
         return Ok();
     }
 }
