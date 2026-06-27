@@ -4,8 +4,8 @@ function Province() {
   const [provinces, setProvinces] = useState([]);
   const [name, setName] = useState("");
 
-  const API = "http://localhost:5047/api/province";
-
+  // const API = "http://localhost:5047/api/province";
+  const API = "/api/province";
   const loadData = () => {
     fetch(API)
       .then(res => res.json())
