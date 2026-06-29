@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace KamisoonRepport.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260625161501_InitialCreate")]
+    [Migration("20260629121356_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -84,6 +84,9 @@ namespace KamisoonRepport.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("BigTruckCount")
+                        .HasColumnType("int");
+
                     b.Property<int>("CompanyId")
                         .HasColumnType("int");
 
@@ -101,6 +104,9 @@ namespace KamisoonRepport.Migrations
 
                     b.Property<string>("ReportDateShamsi")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("SmallTruckCount")
+                        .HasColumnType("int");
 
                     b.Property<int>("TruckTypeId")
                         .HasColumnType("int");

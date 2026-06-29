@@ -34,19 +34,19 @@ const CompanyReport = () => {
             year: year || ""
         });
 
-        // window.open(
-        //     `http://localhost:5047/api/report/export-excel?${params.toString()}`,
-        //     "_blank"
-        // );
-         window.open(
-            `/api/report/export-excel?${params.toString()}`,
+        window.open(
+            `http://localhost:5047/api/report/export-excel?${params.toString()}`,
             "_blank"
         );
+        //  window.open(
+        //     `/api/report/export-excel?${params.toString()}`,
+        //     "_blank"
+        // );
     };
 
     useEffect(() => {
-        //axios.get("http://localhost:5047/api/company")
-        axios.get("/api/company")
+        axios.get("http://localhost:5047/api/company")
+        // axios.get("/api/company")
             .then((res) => setCompanies(res.data));
     }, []);
 
@@ -59,8 +59,8 @@ const CompanyReport = () => {
 
         try {
             const res = await axios.get(
-                //"http://localhost:5047/api/report/company-report",
-                "/api/report/company-report",
+                "http://localhost:5047/api/report/company-report",
+                // "/api/report/company-report",
                 {
                     params: {
                         companyId: companyId || null,

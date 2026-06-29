@@ -1,15 +1,15 @@
 import { useEffect, useState } from "react";
-
 function Province() {
   const [provinces, setProvinces] = useState([]);
   const [name, setName] = useState("");
+ const [date, setDate] = useState("");
 
-  // const API = "http://localhost:5047/api/province";
-  const API = "/api/province";
+  const API = "http://localhost:5047/api/province";
+
   const loadData = () => {
     fetch(API)
-      .then(res => res.json())
-      .then(data => setProvinces(data));
+      .then((res) => res.json())
+      .then((data) => setProvinces(data));
   };
 
   useEffect(() => {
@@ -22,7 +22,9 @@ function Province() {
     fetch(API, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name })
+      body: JSON.stringify({
+        name
+      }),
     }).then(() => {
       setName("");
       loadData();
@@ -31,25 +33,25 @@ function Province() {
 
   const deleteProvince = (id) => {
     fetch(`${API}/${id}`, {
-      method: "DELETE"
+      method: "DELETE",
     }).then(() => loadData());
   };
 
   return (
     <div className="container py-4">
 
-      {/* ================= HEADER ================= */}
+      {/* HEADER */}
       <div className="text-center mb-4 mt-5">
         <h3 className="fw-bold">🗺 د ولایتونو مدیریت</h3>
         <p className="text-muted">ټول ولایتونه په اسانۍ سره مدیریت کړئ</p>
       </div>
 
-      {/* ================= FORM ================= */}
+      {/* FORM */}
       <div className="card shadow-sm p-3 mb-4">
-
         <div className="row g-2 align-items-center">
 
-          <div className="col-12 col-md-9">
+          {/* NAME */}
+          <div className="col-12 col-md-12">
             <input
               className="form-control"
               placeholder="د ولایت نوم"
@@ -57,23 +59,18 @@ function Province() {
               onChange={(e) => setName(e.target.value)}
             />
           </div>
-
+          {/* BUTTON */}
           <div className="col-12 col-md-3 d-grid">
-            <button
-              className="btn btn-primary"
-              onClick={addProvince}
-            >
+            <button className="btn btn-primary" onClick={addProvince}>
               ➕ ذخیره
             </button>
           </div>
 
         </div>
-
       </div>
 
-      {/* ================= TABLE ================= */}
+      {/* TABLE */}
       <div className="card shadow-sm">
-
         <div className="card-header bg-dark text-white">
           د ولایتونو لیست
         </div>
@@ -116,23 +113,14 @@ function Province() {
 
           </table>
         </div>
-
       </div>
 
-      {/* ================= MOBILE STYLE ================= */}
+      {/* MOBILE STYLE */}
       <style>{`
         @media (max-width: 576px) {
-          h3 {
-            font-size: 18px;
-          }
-
-          .btn {
-            font-size: 14px;
-          }
-
-          table {
-            font-size: 14px;
-          }
+          h3 { font-size: 18px; }
+          .btn { font-size: 14px; }
+          table { font-size: 14px; }
         }
       `}</style>
 

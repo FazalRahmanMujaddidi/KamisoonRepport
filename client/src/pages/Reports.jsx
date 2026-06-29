@@ -1,8 +1,12 @@
+import DatePickerModule from "react-multi-date-picker";
+import persian from "react-date-object/calendars/persian";
+import persian_fa from "react-date-object/locales/persian_fa";
 import { useEffect, useState } from "react";
+const DatePicker = DatePickerModule.default;
 import Select from "react-select";
 function Report() {
-    // const API = "http://localhost:5047/api/report";
-  const API = "/api/report";
+    const API = "http://localhost:5047/api/report";
+    // const API = "/api/report";
     const [reports, setReports] = useState([]);
     const [companies, setCompanies] = useState([]);
     const [provinces, setProvinces] = useState([]);
@@ -17,9 +21,26 @@ function Report() {
         itemId: "",
         truckTypeId: "",
         quantity: "",
-        reportDate: ""
+        // reportDate: ""
+        reportDate: null
     });
-
+const afghanLocale = {
+    ...persian_fa,
+    months: [
+        ["حمل", "حم"],
+        ["ثور", "ثو"],
+        ["جوزا", "جو"],
+        ["سرطان", "سر"],
+        ["اسد", "اسد"],
+        ["سنبله", "سن"],
+        ["میزان", "می"],
+        ["عقرب", "عق"],
+        ["قوس", "قو"],
+        ["جدی", "جد"],
+        ["دلو", "دل"],
+        ["حوت", "حو"],
+    ],
+};
     const loadReports = () => {
         fetch(API)
             .then(res => res.json())
@@ -27,14 +48,14 @@ function Report() {
     };
 
     const loadDropdowns = () => {
-        // fetch("http://localhost:5047/api/company").then(r => r.json()).then(setCompanies);
-        // fetch("http://localhost:5047/api/province").then(r => r.json()).then(setProvinces);
-        // fetch("http://localhost:5047/api/items").then(r => r.json()).then(setItems);
-        // fetch("http://localhost:5047/api/trucktype").then(r => r.json()).then(setTruckTypes);
-         fetch("/api/company").then(r => r.json()).then(setCompanies);
-        fetch("/api/province").then(r => r.json()).then(setProvinces);
-        fetch("/api/items").then(r => r.json()).then(setItems);
-        fetch("/api/trucktype").then(r => r.json()).then(setTruckTypes);
+        fetch("http://localhost:5047/api/company").then(r => r.json()).then(setCompanies);
+        fetch("http://localhost:5047/api/province").then(r => r.json()).then(setProvinces);
+        fetch("http://localhost:5047/api/items").then(r => r.json()).then(setItems);
+        fetch("http://localhost:5047/api/trucktype").then(r => r.json()).then(setTruckTypes);
+        //  fetch("/api/company").then(r => r.json()).then(setCompanies);
+        // fetch("/api/province").then(r => r.json()).then(setProvinces);
+        // fetch("/api/items").then(r => r.json()).then(setItems);
+        // fetch("/api/trucktype").then(r => r.json()).then(setTruckTypes);
     };
 
     useEffect(() => {
@@ -53,7 +74,10 @@ function Report() {
             provinceId: Number(form.provinceId),
             itemId: Number(form.itemId),
             truckTypeId: Number(form.truckTypeId),
-            quantity: Number(form.quantity)
+            quantity: Number(form.quantity),
+            reportDate: form.reportDate
+                ? form.reportDate.toString()
+                : null
         };
 
         if (editId === null) {
@@ -79,7 +103,8 @@ function Report() {
             itemId: "",
             truckTypeId: "",
             quantity: "",
-            reportDate: ""
+            // reportDate: ""
+              reportDate: null
         });
     };
 
@@ -96,8 +121,8 @@ function Report() {
             return;
         }
 
-       // const res = await fetch(`http://localhost:5047/api/report/${r.id}`);
-         const res = await fetch(`/api/report/${r.id}`);
+        const res = await fetch(`http://localhost:5047/api/report/${r.id}`);
+        //  const res = await fetch(`/api/report/${r.id}`);
         const data = await res.json();
 
         setEditId(data.id);
@@ -114,14 +139,14 @@ function Report() {
 
     return (
         <div className="container py-4">
-<div className="sticky-top bg-white shadow-sm p-3 z-3">
-            {/* HEADER */}
-            <div className="text-center mb-4 mt-5">
-                <h3 className="fw-bold">📊 د بار انتقال راپور سیستم</h3>
-                <p className="text-muted">د شرکتونو د بارونو مدیریت په اسانه ډول</p>
-            </div>
+            <div className="sticky-top bg-white shadow-sm p-3 z-3">
+                {/* HEADER */}
+                <div className="text-center mb-4 mt-5">
+                    <h3 className="fw-bold">📊 د بار انتقال راپور سیستم</h3>
+                    <p className="text-muted">د شرکتونو د بارونو مدیریت په اسانه ډول</p>
+                </div>
 
-            {/* ================= FORM ================= */}
+                {/* ================= FORM ================= */}
 
                 <div className="row g-3">
 
@@ -208,14 +233,21 @@ function Report() {
                     </div>
 
                     <div className="col-12 col-md-4">
-                        <label className="form-label">تاریخ</label>
-                        <input
-                            type="date"
-                            name="reportDate"
-                            className="form-control"
-                            value={form.reportDate}
-                            onChange={handleChange}
-                        />
+                            <label className="form-label">تاریخ</label><br />
+
+                            <DatePicker
+                                value={form.reportDate}
+                                onChange={(value) =>
+                                    setForm({ ...form, reportDate: value })
+                                }
+                                calendar={persian}
+                                locale={afghanLocale}
+                                format="YYYY/MM/DD"
+                                inputClass="form-control w-100"
+                                className="w-100"
+                                placeholder="تاریخ انتخاب کړئ"
+                                 style={{ width: "100%" }}
+                            />
                     </div>
 
                 </div>

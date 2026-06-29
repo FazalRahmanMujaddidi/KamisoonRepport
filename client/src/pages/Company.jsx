@@ -4,8 +4,7 @@ function Company() {
   const [companies, setCompanies] = useState([]);
   const [name, setName] = useState("");
 
-  //const API = "http://localhost:5047/api/company";
-  const API="/api/company";
+  const API = "http://localhost:5047/api/company";
   const loadData = () => {
     fetch(API)
       .then(res => res.json())

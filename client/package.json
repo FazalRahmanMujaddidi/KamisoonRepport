@@ -10,6 +10,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@react-shamsi/calendar": "^0.2.5",
+    "@react-shamsi/datepicker": "^0.2.1",
     "axios": "^1.18.1",
     "bootstrap": "^5.3.8",
     "react": "^19.2.7",

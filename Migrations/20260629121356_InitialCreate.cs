@@ -73,6 +73,8 @@ namespace KamisoonRepport.Migrations
                     ProvinceId = table.Column<int>(type: "int", nullable: false),
                     ItemId = table.Column<int>(type: "int", nullable: false),
                     TruckTypeId = table.Column<int>(type: "int", nullable: false),
+                    SmallTruckCount = table.Column<int>(type: "int", nullable: false),
+                    BigTruckCount = table.Column<int>(type: "int", nullable: false),
                     Quantity = table.Column<int>(type: "int", nullable: false),
                     ReportDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ReportDateShamsi = table.Column<string>(type: "nvarchar(max)", nullable: true)
