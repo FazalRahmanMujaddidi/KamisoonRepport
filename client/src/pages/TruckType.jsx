@@ -48,27 +48,31 @@ function TruckType() {
       {/* ================= FORM ================= */}
       <div className="card shadow-sm p-3 mb-4">
 
-        <div className="row g-2 align-items-center">
+        <div className="row g-2">
+  {/* Input */}
+  <div className="col-12">
+    <input
+      className="form-control form-control-lg"
+      placeholder="د موټر ډول"
+      value={name}
+      onChange={(e) => setName(e.target.value)}
+    />
+  </div>
 
-          <div className="col-12 col-md-9">
-            <input
-              className="form-control"
-              placeholder="د موټر ډول"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
-          </div>
-
-          <div className="col-12 col-md-3 d-grid">
-            <button
-              className="btn btn-primary"
-              onClick={addTruckType}
-            >
-              ➕ ذخیره
-            </button>
-          </div>
-
-        </div>
+  {/* Button below */}
+  <div className="col-12">
+    <div className="row">
+      <div className="col-md-3">
+        <button
+          className="btn btn-primary btn-lg w-100"
+          onClick={addTruckType}
+        >
+          ➕ ذخیره
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
 
       </div>
 

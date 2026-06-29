@@ -21,10 +21,11 @@ public class Report
 public int SmallTruckCount { get; set; }
 public int BigTruckCount { get; set; }
     public int Quantity { get; set; }
-        // ✅ Gregorian (System Date)
+    [NotMapped]
     public DateTime ReportDate { get; set; }
-
-    // ⭐ NEW: optional Shamsi string (store or calculate)
+    [NotMapped]
+    
     public string? ReportDateShamsi { get; set; }
+    public string DateS { get; set; }
 
 }

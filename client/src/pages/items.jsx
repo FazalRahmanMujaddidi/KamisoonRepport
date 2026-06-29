@@ -4,8 +4,8 @@ function Items() {
   const [items, setItems] = useState([]);
   const [name, setName] = useState("");
 
-   const API = "http://localhost:5047/api/items";
-   // const API = "/api/items";
+  const API = "http://localhost:5047/api/items";
+  // const API = "/api/items";
 
   const loadData = () => {
     fetch(API)
@@ -47,26 +47,30 @@ function Items() {
 
       {/* ================= FORM ================= */}
       <div className="card shadow-sm p-3 mb-4">
-        <div className="row g-2 align-items-center">
-
-          <div className="col-12 col-md-9">
+        <div className="row g-2">
+          {/* Input */}
+          <div className="col-12">
             <input
-              className="form-control"
+              className="form-control form-control-lg"
               placeholder="د جنس نوم"
               value={name}
               onChange={(e) => setName(e.target.value)}
             />
           </div>
 
-          <div className="col-12 col-md-3 d-grid">
-            <button
-              className="btn btn-primary"
-              onClick={addItem}
-            >
-              ➕ ذخیره
-            </button>
+          {/* Button below */}
+          <div className="col-12">
+            <div className="row">
+              <div className="col-md-3">
+                <button
+                  className="btn btn-primary btn-lg w-100"
+                  onClick={addItem}
+                >
+                  ➕ ذخیره
+                </button>
+              </div>
+            </div>
           </div>
-
         </div>
       </div>
 

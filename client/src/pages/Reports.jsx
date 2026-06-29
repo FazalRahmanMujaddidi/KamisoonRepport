@@ -2,6 +2,7 @@ import DatePickerModule from "react-multi-date-picker";
 import persian from "react-date-object/calendars/persian";
 import persian_fa from "react-date-object/locales/persian_fa";
 import { useEffect, useState } from "react";
+import { DateObject } from "react-multi-date-picker";
 const DatePicker = DatePickerModule.default;
 import Select from "react-select";
 function Report() {
@@ -24,23 +25,23 @@ function Report() {
         // reportDate: ""
         reportDate: null
     });
-const afghanLocale = {
-    ...persian_fa,
-    months: [
-        ["حمل", "حم"],
-        ["ثور", "ثو"],
-        ["جوزا", "جو"],
-        ["سرطان", "سر"],
-        ["اسد", "اسد"],
-        ["سنبله", "سن"],
-        ["میزان", "می"],
-        ["عقرب", "عق"],
-        ["قوس", "قو"],
-        ["جدی", "جد"],
-        ["دلو", "دل"],
-        ["حوت", "حو"],
-    ],
-};
+    const afghanLocale = {
+        ...persian_fa,
+        months: [
+            ["حمل", "حم"],
+            ["ثور", "ثو"],
+            ["جوزا", "جو"],
+            ["سرطان", "سر"],
+            ["اسد", "اسد"],
+            ["سنبله", "سن"],
+            ["میزان", "می"],
+            ["عقرب", "عق"],
+            ["قوس", "قو"],
+            ["جدی", "جد"],
+            ["دلو", "دل"],
+            ["حوت", "حو"],
+        ],
+    };
     const loadReports = () => {
         fetch(API)
             .then(res => res.json())
@@ -68,34 +69,45 @@ const afghanLocale = {
     };
 
     const saveReport = () => {
-        const payload = {
-            ...form,
-            companyId: Number(form.companyId),
-            provinceId: Number(form.provinceId),
-            itemId: Number(form.itemId),
-            truckTypeId: Number(form.truckTypeId),
-            quantity: Number(form.quantity),
-            reportDate: form.reportDate
-                ? form.reportDate.toString()
-                : null
-        };
+        const dateValue =
+    typeof form.reportDate === "string"
+        ? form.reportDate
+        : form.reportDate?.format?.("YYYY/MM/DD");
 
-        if (editId === null) {
-            fetch(API, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(payload)
-            }).then(loadReports);
-        } else {
-            fetch(`${API}/${editId}`, {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(payload)
-            }).then(() => {
-                setEditId(null);
-                loadReports();
-            });
-        }
+console.log("DATE VALUE:", dateValue);
+    if (!form.reportDate) {
+        alert("Please select date");
+        return;
+    }
+
+    const payload = {
+        companyId: Number(form.companyId),
+        provinceId: Number(form.provinceId),
+        itemId: Number(form.itemId),
+        truckTypeId: Number(form.truckTypeId),
+        quantity: Number(form.quantity),
+        DateS: form.reportDate.format("YYYY/MM/DD")
+    };
+
+    const isEdit = editId !== null;
+
+    const url = isEdit ? `${API}/${editId}` : API;
+    const method = isEdit ? "PUT" : "POST";
+
+    fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+    })
+    .then(res => {
+        if (!res.ok) throw new Error("Request failed");
+        return res.json();
+    })
+    .then(() => {
+        loadReports();
+
+        // IMPORTANT RESET
+        setEditId(null);
 
         setForm({
             companyId: "",
@@ -103,42 +115,36 @@ const afghanLocale = {
             itemId: "",
             truckTypeId: "",
             quantity: "",
-            // reportDate: ""
-              reportDate: null
+            reportDate: null
         });
-    };
+    })
+    .catch(err => console.log(err));
+};
+// const editReport = async (r) => {
+//     console.log("ROW DATA:", r);
+// };
+const editReport = (r) => {
+  console.log("EDIT RECORD:", r);
 
-    const deleteReport = (id) => {
-        fetch(`${API}/${id}`, {
-            method: "DELETE"
-        }).then(loadReports);
-    };
-    const editReport = async (r) => {
-        console.log("EDIT ROW:", r);
+  const truckTypeId =
+    r.smallTruckCount > 0 ? 1 :
+    r.bigTruckCount > 0 ? 2 : "";
 
-        if (!r.id) {
-            alert("ID is missing from API response");
-            return;
-        }
+  setEditId(1); // temporary test
 
-        const res = await fetch(`http://localhost:5047/api/report/${r.id}`);
-        //  const res = await fetch(`/api/report/${r.id}`);
-        const data = await res.json();
+  setForm({
+    companyId: r.companyId,
+    provinceId: r.provinceId,
+    itemId: r.itemId,
+    truckTypeId,
+    quantity: r.totalQuantity,
+    reportDate: r.dateS
+  });
 
-        setEditId(data.id);
-
-        setForm({
-            companyId: data.companyId,
-            provinceId: data.provinceId,
-            itemId: data.itemId,
-            truckTypeId: data.truckTypeId,
-            quantity: data.quantity,
-            reportDate: data.reportDate?.split("T")[0]
-        });
-    };
-
+  console.log("FORM SET");
+};
     return (
-        <div className="container py-4">
+        <div className="container py-4 mt-5">
             <div className="sticky-top bg-white shadow-sm p-3 z-3">
                 {/* HEADER */}
                 <div className="text-center mb-4 mt-5">
@@ -166,6 +172,7 @@ const afghanLocale = {
                                 setForm({ ...form, companyId: selected?.value || "" })
                             }
                             placeholder="شرکت انتخاب کړئ"
+                            className="form-control-lg"
                         />
                     </div>
 
@@ -184,6 +191,7 @@ const afghanLocale = {
                                 setForm({ ...form, provinceId: selected?.value || "" })
                             }
                             placeholder="ولایت انتخاب کړئ"
+                            className="form-control-lg"
                         />
                     </div>
 
@@ -202,23 +210,40 @@ const afghanLocale = {
                                 setForm({ ...form, itemId: selected?.value || "" })
                             }
                             placeholder="جنس انتخاب کړئ"
+                            className="form-control-lg"
                         />
                     </div>
 
-                    {/* ROW 2 */}
                     <div className="col-12 col-md-4">
                         <label className="form-label">واسطه ډول</label>
-                        <select
-                            name="truckTypeId"
-                            className="form-select"
-                            value={form.truckTypeId}
-                            onChange={handleChange}
-                        >
-                            <option value="">انتخاب واسطه</option>
-                            {truckTypes.map(t => (
-                                <option key={t.id} value={t.id}>{t.name}</option>
-                            ))}
-                        </select>
+
+                        <Select
+                            options={truckTypes.map(t => ({
+                                value: t.id,
+                                label: t.name
+                            }))}
+                            value={
+                                truckTypes
+                                    .map(t => ({
+                                        value: t.id,
+                                        label: t.name
+                                    }))
+                                    .find(x => x.value === form.truckTypeId) || null
+                            }
+                            onChange={(selected) =>
+                                setForm({
+                                    ...form,
+                                    truckTypeId: selected?.value || ""
+                                })
+                            }
+                            placeholder="انتخاب واسطه"
+                            styles={{
+                                control: (base) => ({
+                                    ...base,
+                                    minHeight: "48px"
+                                })
+                            }}
+                        />
                     </div>
 
                     <div className="col-12 col-md-4">
@@ -226,28 +251,26 @@ const afghanLocale = {
                         <input
                             type="number"
                             name="quantity"
-                            className="form-control"
+                            className="form-control form-control-lg"
                             value={form.quantity}
                             onChange={handleChange}
                         />
                     </div>
 
                     <div className="col-12 col-md-4">
-                            <label className="form-label">تاریخ</label><br />
+                        <label className="form-label">تاریخ</label><br />
+                        <DatePicker
+                            value={form.reportDate}
+                            onChange={(value) =>
+                                setForm({ ...form, reportDate: value })
+                            }
+                            calendar={persian}
+                            locale={afghanLocale}
+                            format="YYYY/MM/DD"
+                            placeholder="تاریخ انتخاب کړئ"
+                            inputClass="form-control form-control-lg w-150"
+                        />
 
-                            <DatePicker
-                                value={form.reportDate}
-                                onChange={(value) =>
-                                    setForm({ ...form, reportDate: value })
-                                }
-                                calendar={persian}
-                                locale={afghanLocale}
-                                format="YYYY/MM/DD"
-                                inputClass="form-control w-100"
-                                className="w-100"
-                                placeholder="تاریخ انتخاب کړئ"
-                                 style={{ width: "100%" }}
-                            />
                     </div>
 
                 </div>
@@ -255,10 +278,11 @@ const afghanLocale = {
                 {/* BUTTON */}
                 <div className="mt-4 d-flex justify-content-end">
                     <button
-                        className={`btn px-4 ${editId ? "btn-warning" : "btn-primary"}`}
+                        type="button"
+                        className={`btn px-4 ${editId !== null ? "btn-warning" : "btn-primary"} form-control-lg`}
                         onClick={saveReport}
                     >
-                        {editId ? " تغیراتو ذخیره✏️" : " ذخیره➕"}
+                        {editId !== null ? " تغیراتو ذخیره✏️" : " ذخیره➕"}
                     </button>
                 </div>
 
@@ -303,11 +327,10 @@ const afghanLocale = {
                                         <td>{r.companyName}</td>
                                         <td>{r.provinceName}</td>
                                         <td>{r.itemName}</td>
-
                                         <td>{r.smallTruckCount}</td>
                                         <td>{r.bigTruckCount}</td>
                                         <td>{r.totalQuantity}</td>
-                                        <td>{r.reportDateShamsi}</td>
+                                        <td>{r.dateS || r.DateS}</td>
                                         <td>
                                             <button
                                                 className="btn btn-warning btn-sm me-1"

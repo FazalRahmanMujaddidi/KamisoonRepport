@@ -1,12 +1,11 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
 namespace KamisoonRepport.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class AddReport : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -76,8 +75,7 @@ namespace KamisoonRepport.Migrations
                     SmallTruckCount = table.Column<int>(type: "int", nullable: false),
                     BigTruckCount = table.Column<int>(type: "int", nullable: false),
                     Quantity = table.Column<int>(type: "int", nullable: false),
-                    ReportDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    ReportDateShamsi = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    DateS = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {

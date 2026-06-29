@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace KamisoonRepport.Models.Dto
 {
     public class CompanyReportDto
@@ -8,6 +10,7 @@ namespace KamisoonRepport.Models.Dto
         public int TotalQuantity { get; set; }
        public int SmallTruckTotal { get; set; }
         public int BigTruckTotal { get; set; }
-        public string ReportDateShamsi { get; set; } = string.Empty;
+        [Required]
+        public string DateS { get; set; }
     }
 }

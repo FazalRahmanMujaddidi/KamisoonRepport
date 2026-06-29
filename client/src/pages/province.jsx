@@ -48,25 +48,27 @@ function Province() {
 
       {/* FORM */}
       <div className="card shadow-sm p-3 mb-4">
-        <div className="row g-2 align-items-center">
+<div className="row g-2">
+  {/* NAME */}
+  <div className="col-12">
+    <input
+      className="form-control form-control-lg"
+      placeholder="د ولایت نوم"
+      value={name}
+      onChange={(e) => setName(e.target.value)}
+    />
+  </div>
 
-          {/* NAME */}
-          <div className="col-12 col-md-12">
-            <input
-              className="form-control"
-              placeholder="د ولایت نوم"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
-          </div>
-          {/* BUTTON */}
-          <div className="col-12 col-md-3 d-grid">
-            <button className="btn btn-primary" onClick={addProvince}>
-              ➕ ذخیره
-            </button>
-          </div>
-
-        </div>
+  {/* BUTTON BELOW */}
+<div className="col-12 col-md-3">
+  <button
+    className="btn btn-primary btn-lg w-100"
+    onClick={addProvince}
+  >
+    ➕ ذخیره
+  </button>
+</div>
+</div>
       </div>
 
       {/* TABLE */}
