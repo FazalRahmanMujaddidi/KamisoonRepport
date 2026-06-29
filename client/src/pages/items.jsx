@@ -4,7 +4,8 @@ function Items() {
   const [items, setItems] = useState([]);
   const [name, setName] = useState("");
 
-  const API = "http://localhost:5047/api/items";
+  // const API = "http://localhost:5047/api/items";
+    const API = "/api/items";
 
   const loadData = () => {
     fetch(API)

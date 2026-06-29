@@ -4,7 +4,8 @@ function TruckType() {
   const [truckTypes, setTruckTypes] = useState([]);
   const [name, setName] = useState("");
 
-  const API = "http://localhost:5047/api/trucktype";
+ // const API = "http://localhost:5047/api/trucktype";
+    const API = "/api/trucktype";
 
   const loadData = () => {
     fetch(API)

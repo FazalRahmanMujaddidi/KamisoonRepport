@@ -56,17 +56,15 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// ✅ Controllers (API only)
+// Controllers (API)
 builder.Services.AddControllers();
 
-// ❌ Remove MVC if you are NOT using Razor views
-// builder.Services.AddControllersWithViews();
-
+// DB
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// ✅ CORS for React
+// CORS for React
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", policy =>
@@ -85,23 +83,21 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-app.UseHttpsRedirection();
+// ⚠️ ORDER IS VERY IMPORTANT
 
-// ✅ IMPORTANT order
 app.UseRouting();
 
+// CORS must be after routing
 app.UseCors("AllowAll");
 
-app.UseAuthorization();
-
-// API routes
-app.MapControllers();
-
-// OPTIONAL: React static hosting (if you use wwwroot)
+// Static files FIRST (React build)
 app.UseDefaultFiles();
 app.UseStaticFiles();
 
-// React fallback routing (VERY IMPORTANT for /company /items etc)
+// API endpoints
+app.MapControllers();
+
+// React fallback LAST (VERY IMPORTANT)
 app.MapFallbackToFile("index.html");
 
 app.Run();

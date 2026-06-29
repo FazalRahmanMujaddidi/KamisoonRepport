@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import Select from "react-select";
 function Report() {
-    const API = "http://localhost:5047/api/report";
-
+    // const API = "http://localhost:5047/api/report";
+  const API = "/api/report";
     const [reports, setReports] = useState([]);
     const [companies, setCompanies] = useState([]);
     const [provinces, setProvinces] = useState([]);
@@ -27,10 +27,14 @@ function Report() {
     };
 
     const loadDropdowns = () => {
-        fetch("http://localhost:5047/api/company").then(r => r.json()).then(setCompanies);
-        fetch("http://localhost:5047/api/province").then(r => r.json()).then(setProvinces);
-        fetch("http://localhost:5047/api/items").then(r => r.json()).then(setItems);
-        fetch("http://localhost:5047/api/trucktype").then(r => r.json()).then(setTruckTypes);
+        // fetch("http://localhost:5047/api/company").then(r => r.json()).then(setCompanies);
+        // fetch("http://localhost:5047/api/province").then(r => r.json()).then(setProvinces);
+        // fetch("http://localhost:5047/api/items").then(r => r.json()).then(setItems);
+        // fetch("http://localhost:5047/api/trucktype").then(r => r.json()).then(setTruckTypes);
+         fetch("/api/company").then(r => r.json()).then(setCompanies);
+        fetch("/api/province").then(r => r.json()).then(setProvinces);
+        fetch("/api/items").then(r => r.json()).then(setItems);
+        fetch("/api/trucktype").then(r => r.json()).then(setTruckTypes);
     };
 
     useEffect(() => {
@@ -92,7 +96,8 @@ function Report() {
             return;
         }
 
-        const res = await fetch(`http://localhost:5047/api/report/${r.id}`);
+       // const res = await fetch(`http://localhost:5047/api/report/${r.id}`);
+         const res = await fetch(`/api/report/${r.id}`);
         const data = await res.json();
 
         setEditId(data.id);
