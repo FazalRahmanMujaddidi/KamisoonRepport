@@ -1,22 +1,12 @@
-
 import React, { useEffect, useState } from "react";
 import Select from "react-select";
 import axios from "axios";
 
-const months = [
-    { value: 1, name: "حمل" },
-    { value: 2, name: "ثور" },
-    { value: 3, name: "جوزا" },
-    { value: 4, name: "سرطان" },
-    { value: 5, name: "اسد" },
-    { value: 6, name: "سنبله" },
-    { value: 7, name: "میزان" },
-    { value: 8, name: "عقرب" },
-    { value: 9, name: "قوس" },
-    { value: 10, name: "جدی" },
-    { value: 11, name: "دلو" },
-    { value: 12, name: "حوت" }
-];
+import DatePickerModule from "react-multi-date-picker";
+import persian from "react-date-object/calendars/persian";
+import persian_fa from "react-date-object/locales/persian_fa";
+
+const DatePicker = DatePickerModule.default;
 
 const CompanyReport = () => {
     const [data, setData] = useState([]);
@@ -24,70 +14,75 @@ const CompanyReport = () => {
     const [loading, setLoading] = useState(true);
 
     const [companyId, setCompanyId] = useState("");
-    const [month, setMonth] = useState("");
-    const [year, setYear] = useState("1405");
+    const [selectedDate, setSelectedDate] = useState(null);
 
+    // 🔵 LOAD COMPANIES
+    useEffect(() => {
+        axios.get("http://localhost:5047/api/company")
+            .then(res => setCompanies(res.data));
+    }, []);
+
+    // 🔵 LOAD REPORT
+const fetchReport = async () => {
+    setLoading(true);
+
+    try {
+        const res = await axios.get(
+            "http://localhost:5047/api/report/company-report",
+            {
+                params: {
+                    ...(companyId ? { companyId: Number(companyId) } : {}),
+                    ...(selectedDate ? { month: selectedDate.month.number } : {}),
+                    ...(selectedDate ? { year: selectedDate.year } : {})
+                }
+            }
+        );
+
+        setData(res.data);
+    } catch (err) {
+        console.log("API ERROR:", err.response?.data || err.message);
+    } finally {
+        setLoading(false);
+    }
+};
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            fetchReport();
+        }, 300);
+
+        return () => clearTimeout(timer);
+    }, [companyId, selectedDate]);
+
+    // 🔵 EXPORT
     const downloadExcel = () => {
         const params = new URLSearchParams({
             companyId: companyId || "",
-            month: month || "",
-            year: year || ""
+            month: selectedDate?.month?.number || "",
+            year: selectedDate?.year || ""
         });
 
         window.open(
             `http://localhost:5047/api/report/export-excel?${params.toString()}`,
             "_blank"
         );
-        //  window.open(
-        //     `/api/report/export-excel?${params.toString()}`,
-        //     "_blank"
-        // );
-    };
-
-    useEffect(() => {
-        axios.get("http://localhost:5047/api/company")
-        // axios.get("/api/company")
-            .then((res) => setCompanies(res.data));
-    }, []);
-
-    useEffect(() => {
-        fetchReport();
-    }, [companyId, month, year]);
-
-    const fetchReport = async () => {
-        setLoading(true);
-
-        try {
-            const res = await axios.get(
-                "http://localhost:5047/api/report/company-report",
-                // "/api/report/company-report",
-                {
-                    params: {
-                        companyId: companyId || null,
-                        month: month || null,
-                        year: year || null
-                    }
-                }
-            );
-
-            setData(res.data);
-        } finally {
-            setLoading(false);
-        }
     };
 
     return (
         <div className="page">
 
-            {/* 🔵 STICKY TOP BAR (FILTERS) */}
+            {/* HEADER */}
             <div className="sticky-header">
 
-                <div className="header text-center mt-5">
+                <div className="text-center mt-4">
                     <h2>📊 د شرکتونو راپور</h2>
-                    <p>د شرکتونو، ولایتونو او جنسونو د انتقالاتو راپور</p>
+                    <p>فلټر شوی راپور سیستم</p>
                 </div>
 
+                {/* FILTERS */}
                 <div className="filters">
+
+                    {/* COMPANY */}
                     <Select
                         options={companies.map(c => ({
                             value: c.id,
@@ -101,44 +96,43 @@ const CompanyReport = () => {
                         onChange={(selected) =>
                             setCompanyId(selected?.value || "")
                         }
-                        placeholder="ټول شرکتونه"
+                        placeholder="شرکت انتخاب کړئ"
                     />
 
-                    <select value={month} onChange={(e) => setMonth(e.target.value)}>
-                        <option value="">ټولې میاشتې</option>
-                        {months.map((m) => (
-                            <option key={m.value} value={m.value}>
-                                {m.name}
-                            </option>
-                        ))}
-                    </select>
+                    {/* DATE PICKER */}
+                    <DatePicker
+                        value={selectedDate}
+                        onChange={setSelectedDate}
+                        calendar={persian}
+                        locale={persian_fa}
+                        format="YYYY/MM/DD"
+                        inputClass="form-control"
+                        placeholder="تاریخ انتخاب کړئ"
+                    />
 
-                    <select value={year} onChange={(e) => setYear(e.target.value)}>
-                        <option value="">ټول کلونه</option>
-                        <option value="1403">1403</option>
-                        <option value="1404">1404</option>
-                        <option value="1405">1405</option>
-                        <option value="1406">1406</option>
-                    </select>
-
+                    {/* RESET */}
                     <button
-                        className="resetBtn btn btn-danger"
+                        className="btn btn-danger"
                         onClick={() => {
                             setCompanyId("");
-                            setMonth("");
-                            setYear("");
+                            setSelectedDate(null);
                         }}
                     >
-                        له سره پیل
+                        Reset
                     </button>
 
-                    <button className="btn btn-success btn-sm" onClick={downloadExcel}>
-                        📥 دانلود
+                    {/* EXPORT */}
+                    <button
+                        className="btn btn-success"
+                        onClick={downloadExcel}
+                    >
+                        📥 Export
                     </button>
+
                 </div>
             </div>
 
-            {/* 🟢 TABLE */}
+            {/* TABLE */}
             <div className="tableContainer">
 
                 {loading ? (
@@ -148,28 +142,38 @@ const CompanyReport = () => {
 
                         <thead>
                             <tr>
+                                <th>#</th>
                                 <th>شرکت</th>
                                 <th>ولایت</th>
                                 <th>کوچنی لاری</th>
                                 <th>غټی لاری</th>
                                 <th>جنس</th>
-                                <th>ټول مقدار</th>
+                                <th>مقدار</th>
                                 <th>تاریخ</th>
                             </tr>
                         </thead>
 
                         <tbody>
-                            {data.map((item, index) => (
-                                <tr key={index}>
-                                    <td>{item.companyName}</td>
-                                    <td>{item.provinceName}</td>
-                                    <td>{item.smallTruckTotal}</td>
-                                    <td>{item.bigTruckTotal}</td>
-                                    <td>{item.itemName}</td>
-                                    <td>{item.totalQuantity}</td>
-                                    <td>{item.reportDateShamsi}</td>
+                            {data.length === 0 ? (
+                                <tr>
+                                    <td colSpan="8" style={{ textAlign: "center" }}>
+                                        معلومات نشته
+                                    </td>
                                 </tr>
-                            ))}
+                            ) : (
+                                data.map((item, index) => (
+                                    <tr key={index}>
+                                        <td>{index + 1}</td>
+                                        <td>{item.companyName}</td>
+                                        <td>{item.provinceName}</td>
+                                        <td>{item.smallTruckTotal}</td>
+                                        <td>{item.bigTruckTotal}</td>
+                                        <td>{item.itemName}</td>
+                                        <td>{item.totalQuantity}</td>
+                                        <td>{item.reportDateShamsi}</td>
+                                    </tr>
+                                ))
+                            )}
                         </tbody>
 
                     </table>
@@ -177,19 +181,18 @@ const CompanyReport = () => {
 
             </div>
 
-            {/* ✅ CSS */}
+            {/* STYLE */}
             <style>{`
                 .page {
                     font-family: Arial;
                     padding: 20px;
                 }
 
-                /* 🔵 sticky header (filters) */
                 .sticky-header {
                     position: sticky;
                     top: 0;
-                    z-index: 1000;
                     background: white;
+                    z-index: 1000;
                     padding: 10px;
                     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
                 }
@@ -198,16 +201,9 @@ const CompanyReport = () => {
                     display: grid;
                     grid-template-columns: repeat(4, 1fr);
                     gap: 10px;
+                    margin-top: 10px;
                 }
 
-                .filters select,
-                .resetBtn {
-                    padding: 8px;
-                    border-radius: 6px;
-                    border: 1px solid #ccc;
-                }
-
-                /* 🟢 TABLE WRAPPER SCROLL */
                 .tableContainer {
                     margin-top: 20px;
                     max-height: 70vh;
@@ -220,13 +216,11 @@ const CompanyReport = () => {
                     border-collapse: collapse;
                 }
 
-                /* 🔥 STICKY HEADER FIX */
                 thead th {
                     position: sticky;
                     top: 0;
                     background: #0d6efd;
                     color: white;
-                    z-index: 5;
                     padding: 10px;
                 }
 

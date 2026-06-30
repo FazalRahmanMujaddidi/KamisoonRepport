@@ -41,13 +41,15 @@ function Report() {
             ["دلو", "دل"],
             ["حوت", "حو"],
         ],
-    };
-    const loadReports = () => {
-        fetch(API)
-            .then(res => res.json())
-            .then(data => setReports(data));
-    };
-
+    };               
+const loadReports = () => {
+    fetch(API)
+        .then(res => res.json())
+        .then(data => {
+            console.log(data);
+            setReports(data);
+        });
+};
     const loadDropdowns = () => {
         fetch("http://localhost:5047/api/company").then(r => r.json()).then(setCompanies);
         fetch("http://localhost:5047/api/province").then(r => r.json()).then(setProvinces);
@@ -86,9 +88,13 @@ console.log("DATE VALUE:", dateValue);
         itemId: Number(form.itemId),
         truckTypeId: Number(form.truckTypeId),
         quantity: Number(form.quantity),
-        DateS: form.reportDate.format("YYYY/MM/DD")
+      //  DateS: form.reportDate.format("YYYY/MM/DD")
+        DateS:
+        typeof form.reportDate === "string"
+            ? form.reportDate
+            : form.reportDate.format("YYYY/MM/DD")
     };
-
+    console.log("PAYLOAD:", payload);
     const isEdit = editId !== null;
 
     const url = isEdit ? `${API}/${editId}` : API;
@@ -125,12 +131,10 @@ console.log("DATE VALUE:", dateValue);
 // };
 const editReport = (r) => {
   console.log("EDIT RECORD:", r);
-
+ setEditId(r.id);
   const truckTypeId =
     r.smallTruckCount > 0 ? 1 :
     r.bigTruckCount > 0 ? 2 : "";
-
-  setEditId(1); // temporary test
 
   setForm({
     companyId: r.companyId,
@@ -140,8 +144,6 @@ const editReport = (r) => {
     quantity: r.totalQuantity,
     reportDate: r.dateS
   });
-
-  console.log("FORM SET");
 };
     return (
         <div className="container py-4 mt-5">
